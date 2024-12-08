@@ -21,7 +21,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
     exe.linkLibrary(raylib.artifact("raylib"));
-    //exe.subsystem = .Windows; // Remove the console window
+    exe.subsystem = .Windows; // Remove the console window
     exe.addRPath(b.path("assets/"));
 
     b.installArtifact(exe);
