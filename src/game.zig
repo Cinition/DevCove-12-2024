@@ -1,5 +1,6 @@
 const std = @import("std");
 const ui = @import("ui.zig");
+const embeds = @import("embeds");
 
 const raylib = @cImport({
     @cInclude("raylib.h");
@@ -7,7 +8,17 @@ const raylib = @cImport({
 
 pub fn init() game {
     var initialized = game{ .coalCounter = 0, .tickCounter = 0 };
-    initialized.font = raylib.LoadFontEx("assets/Oldenburg-Regular.ttf", 96, null, 0);
+    initialized.font = raylib.LoadFontFromMemory(".ttf", embeds.embeddedFont.ptr, embeds.embeddedFont.len, 96, null, 0);
+
+    var coalLumpImage = raylib.LoadImageFromMemory(".png", embeds.embeddedCoalLump.ptr, embeds.embeddedCoalLump.len);
+    var backgroundImage = raylib.LoadImageFromMemory(".png", embeds.embeddedBackground.ptr, embeds.embeddedBackground.len);
+    var buttonBackgroundImage = raylib.LoadImageFromMemory(".png", embeds.embeddedButtonBG.ptr, embeds.embeddedButtonBG.len);
+    defer raylib.UnloadImage(coalLumpImage);
+    defer raylib.UnloadImage(backgroundImage);
+    defer raylib.UnloadImage(buttonBackgroundImage);
+    raylib.ImageResize(&coalLumpImage, 250, 250);
+    raylib.ImageResize(&backgroundImage, 1200, 900);
+    raylib.ImageResize(&buttonBackgroundImage, 260, 70);
 
     // CoalCounter Text
     const coalLumpCounter = ui.Text.Init(raylib.Vector2{ .x = 400, .y = 150 }, "0", initialized.font, 80, raylib.WHITE, true);
@@ -17,7 +28,7 @@ pub fn init() game {
 
     // CoalLump Button
     var coalLumpButton = ui.Button.Init(raylib.Vector2{ .x = 400, .y = 550 }, raylib.Vector2{ .x = 250, .y = 250 }, true);
-    coalLumpButton.LoadBackground("assets/coallump.png");
+    coalLumpButton.background = raylib.LoadTextureFromImage(coalLumpImage);
     initialized.buttonCoalLump = coalLumpButton;
 
     // Upgrades
@@ -27,16 +38,16 @@ pub fn init() game {
     initialized.upgrades.reindeer = ui.Upgrade.Init(raylib.Vector2{ .x = 1025, .y = 535 }, raylib.Vector2{ .x = 260, .y = 70 }, "Reindeer Farm", 14_520.0, 100_000, initialized.font);
     initialized.upgrades.cloner = ui.Upgrade.Init(raylib.Vector2{ .x = 1025, .y = 615 }, raylib.Vector2{ .x = 260, .y = 70 }, "Coal Cloner", 159_720.0, 1_000_000, initialized.font);
     initialized.upgrades.wormHole = ui.Upgrade.Init(raylib.Vector2{ .x = 1025, .y = 695 }, raylib.Vector2{ .x = 260, .y = 70 }, "Wormhole", 351_384_000.0, 2_000_000_000, initialized.font);
-    initialized.upgrades.clicker.button.LoadBackground("assets/buttonbg.png");
-    initialized.upgrades.elfHelper.button.LoadBackground("assets/buttonbg.png");
-    initialized.upgrades.printer.button.LoadBackground("assets/buttonbg.png");
-    initialized.upgrades.reindeer.button.LoadBackground("assets/buttonbg.png");
-    initialized.upgrades.cloner.button.LoadBackground("assets/buttonbg.png");
-    initialized.upgrades.wormHole.button.LoadBackground("assets/buttonbg.png");
+    initialized.upgrades.clicker.button.background = raylib.LoadTextureFromImage(buttonBackgroundImage);
+    initialized.upgrades.elfHelper.button.background = raylib.LoadTextureFromImage(buttonBackgroundImage);
+    initialized.upgrades.printer.button.background = raylib.LoadTextureFromImage(buttonBackgroundImage);
+    initialized.upgrades.reindeer.button.background = raylib.LoadTextureFromImage(buttonBackgroundImage);
+    initialized.upgrades.cloner.button.background = raylib.LoadTextureFromImage(buttonBackgroundImage);
+    initialized.upgrades.wormHole.button.background = raylib.LoadTextureFromImage(buttonBackgroundImage);
 
     // Background
     var background = ui.Image.Init(raylib.Vector2{ .x = 0, .y = 0 }, raylib.Vector2{ .x = 1200, .y = 900 }, false);
-    background.LoadBackground("assets/background.png");
+    background.background = raylib.LoadTextureFromImage(backgroundImage);
     initialized.imageBackground = background;
 
     return initialized;

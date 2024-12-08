@@ -102,11 +102,9 @@ pub const Button = struct {
         self.text = Text.Init(self.base.pos, text, font, fontSize, color, true);
     }
 
-    pub fn LoadBackground(self: *Button, path: []const u8) void {
-        var image = raylib.LoadImage(path.ptr);
-        raylib.ImageResize(&image, @as(c_int, @intFromFloat(self.base.size.x)), @as(c_int, @intFromFloat(self.base.size.y)));
-        self.background = raylib.LoadTextureFromImage(image);
-        raylib.UnloadImage(image);
+    pub fn LoadBackground(self: *Button, image: *raylib.Image) void {
+        raylib.ImageResize(image, @as(c_int, @intFromFloat(self.base.size.x)), @as(c_int, @intFromFloat(self.base.size.y)));
+        self.background = raylib.LoadTextureFromImage(*image);
     }
 };
 

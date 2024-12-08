@@ -11,11 +11,18 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    const embed = b.createModule(.{
+        .root_source_file = b.path("assets/embed.zig"),
+    });
+    exe.root_module.addImport("embeds", embed);
+
     const raylib = b.dependency("raylib", .{
         .target = target,
         .optimize = optimize,
     });
     exe.linkLibrary(raylib.artifact("raylib"));
+    //exe.subsystem = .Windows; // Remove the console window
+    exe.addRPath(b.path("assets/"));
 
     b.installArtifact(exe);
 
